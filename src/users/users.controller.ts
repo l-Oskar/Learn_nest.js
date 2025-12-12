@@ -1,18 +1,33 @@
-import { Body, Controller, Get, NotFoundException, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Post,
+  Param,
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+
+type User = {
+  id: number;
+  name: string;
+};
 
 @Controller('users')
 export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
   @Get()
-  getAllUsers(): string {
-    return 'All Users';
+  getAllUsers(): User[] {
+    return this.usersService.getAllUsers();
+  }
+
+  @Get(':id')
+  getUserById(@Param('id') id: string) {
+    return this.usersService.getUserById(Number(id));
   }
 
   @Post()
-  createUser(@Body() name: string) {
-    if (name) {
-      throw new NotFoundException('Need user name!');
-    }
-    console.log(name);
-    return `User was created: ${name}`;
+  createUser(@Body('name') name: string) {
+    return this.usersService.createUser(name);
   }
 }
